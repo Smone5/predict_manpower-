@@ -1,6 +1,6 @@
 # Predict Fabrication Shop Manpower
 
-A script I created in a scheduling contract position to predict the manpower for welding fabrication shop in Florida. 
+A a few VBA scripts I created in a scheduling contract position to predict the manpower for welding fabrication shop in Florida. 
 
 ## Problem
 The initial problem was the fabrication shop I working at was using a lot of overtime to finish projects on the time. The company was wondering why so much overtime was being used to complete jobs? 
