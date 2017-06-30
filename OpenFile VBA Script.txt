@@ -1,0 +1,461 @@
+Sub ProcessFiles()
+    Dim filename, Pathname As String
+    Dim Wb As Workbook
+    Dim ws As Worksheet
+    Dim MainSheet As Worksheet
+    Dim c As Range
+    Dim Rng As Range
+
+    Application.DisplayAlerts = False
+    
+    Pathname = ActiveWorkbook.Path & "\Files\"
+    filename = Dir(Pathname & "*.xls")
+    Do While filename <> ""
+        Set Wb = Workbooks.Open(Pathname & filename)
+        DoWork Wb
+        Wb.Close SaveChanges:=True
+        filename = Dir()
+    Loop
+    
+End Sub
+
+Sub DoWork(Wb As Workbook)
+With Wb
+    
+    Dim Firstrow As Long
+    Dim Lastrow As Long
+    Dim Lrow As Long
+    Dim Lcol As Long
+    Dim CalcMode As Long
+    Dim ViewMode As Long
+    Dim FindCustomer As Long
+    Dim FindStatus As Long
+    Dim FindPO As Long
+    
+    Dim FindFalse As Range
+    
+    Dim ProjectName As String
+    Dim ProjectManager As String
+    Dim Customer As String
+    Dim CustomerPo As String
+    Dim Status As String
+    Dim Description As String
+
+    With Application
+        CalcMode = .Calculation
+        .Calculation = xlCalculationManual
+        .ScreenUpdating = False
+        .DisplayAlerts = False
+    End With
+    
+    'We use the ActiveSheet but you can replace this with
+    'Sheets("MySheet")if you want
+    With ActiveSheet
+
+        'We select the sheet so we can change the window view
+        .Select
+
+        'If you are in Page Break Preview Or Page Layout view go
+        'back to normal view, we do this for speed
+        ViewMode = ActiveWindow.View
+        ActiveWindow.View = xlNormalView
+
+        'Turn off Page Breaks, we do this for speed
+        .DisplayPageBreaks = False
+
+        'Set the first and last row to loop through
+        Firstrow = .UsedRange.Cells(1).Row
+        Lastrow = .UsedRange.Rows(.UsedRange.Rows.Count).Row
+        
+        'Set the first and last column to loop through
+        Firstcol = .UsedRange.Cells(1).Column
+        Lastcol = .UsedRange.Columns(.UsedRange.Columns.Count).Column
+
+        'Loop through the spreadsheet and unmerge cells
+        For Lrow = Lastrow To Firstrow Step -1
+            For Lcol = Lastcol To Firstcol Step -1
+                With .Cells(Lrow, Lcol)
+                    If .MergeCells Then
+                        .MergeArea.UnMerge
+                    End If
+                End With
+            Next Lcol
+        Next Lrow
+
+        ProjectName = .Cells(3, "A").Value
+        ProjectNameLength = Len(ProjectName)
+        ProjectName = Mid(ProjectName, 10, ProjectNameLength)
+        
+        
+        ProjectManager = .Cells(4, "A").Value
+        ProjectManagerLength = Len(ProjectManager)
+        ProjectManager = Mid(ProjectManager, 18, ProjectManagerLength)
+        
+        Description = .Cells(5, "A").Value
+        DescriptionLength = Len(Description)
+        Description = Mid(Description, 14, DescriptionLength)
+        
+        'Find the "False" Column
+        Set FindFalse = .UsedRange.Find("False", , xlValues, xlWhole)
+        
+        Firstcol = .UsedRange.Cells(1).Column
+        Lastcol = .UsedRange.Columns(.UsedRange.Columns.Count).Column
+        
+        Firstrow = .UsedRange.Cells(1).Row
+        Lastrow = .UsedRange.Rows(.UsedRange.Rows.Count).Row
+        
+        'Find the column of "Customer"
+        For Lrow = Lastrow To Firstrow Step -1
+            For Lcol = Lastcol To Firstcol Step -1
+                If Cells(Lrow, Lcol).Value Like "Customer:*" Then
+                    FindCustomer = Lcol
+                End If
+                    
+                If Cells(Lrow, Lcol).Value Like "Status*" Then
+                    FindStatus = Lcol
+                End If
+                
+                If Cells(Lrow, Lcol).Value Like "Customer PO:*" Then
+                    FindPO = Lcol
+                End If
+            Next Lcol
+        Next Lrow
+
+        Customer = .Cells(3, FindCustomer).Value
+        CustomerLength = Len(Customer)
+        Customer = Mid(Customer, 10, CustomerLength)
+        
+        Status = .Cells(3, FindStatus).Value
+        StatusLength = Len(Status)
+        Status = Mid(Status, 8, StatusLength)
+        
+        CustomerPo = .Cells(4, FindPO)
+        CustomerPoLength = Len(CustomerPo)
+        CustomerPo = Mid(CustomerPo, 14, CustomerPoLength)
+        
+        
+        Firstrow = .UsedRange.Cells(1).Row
+        Lastrow = .UsedRange.Rows(.UsedRange.Rows.Count).Row
+        
+        'We loop from Lastrow to Firstrow (bottom to top)
+        For Lrow = Lastrow To Firstrow Step -1
+            'We check the values in the AB column in this example
+            With .Cells(Lrow, FindFalse.Column)
+                If .Value <> "False" Then
+                    .EntireRow.Delete
+                    'This will delete each row with the Value "False"
+                    'in Column X, case sensitive.
+                End If
+            End With
+        Next Lrow
+        
+        'Delete empty columns
+        For lngI = ActiveCell.SpecialCells(xlCellTypeLastCell).Column To 1 Step -1
+            If Application.WorksheetFunction.CountA(ActiveSheet.Columns(lngI)) = 0 Then
+                ActiveSheet.Columns(lngI).Delete
+            End If
+        Next lngI
+        
+        'Re-intialize or sheets # rows and # columns
+        Firstrow = .UsedRange.Cells(1).Row
+        Lastrow = .UsedRange.Rows(.UsedRange.Rows.Count).Row
+        
+        Firstcol = .UsedRange.Cells(1).Column
+        Lastcol = .UsedRange.Columns(.UsedRange.Columns.Count).Column
+        
+        'Trim the data of white spaces
+        For Lrow = Lastrow To Firstrow Step -1
+            For Lcol = Lastcol To Firstcol Step -1
+                With .Cells(Lrow, Lcol)
+                    .Value = Trim(.Value)
+                End With
+            Next Lcol
+        Next Lrow
+        
+        'Insert two blank columns at beginning of worksheet
+        .Columns(1).Insert shift:=xlRight
+        .Columns(1).Insert shift:=xlRight
+        .Columns(1).Insert shift:=xlRight
+        .Columns(1).Insert shift:=xlRight
+        .Columns(1).Insert shift:=xlRight
+        .Columns(1).Insert shift:=xlRight
+        
+        'Clear all cells formats
+        .Cells.ClearFormats
+        
+        'Change the date column to a date format
+        .Columns("G").EntireColumn.NumberFormat = "m/d/yyyy"
+        
+    
+    End With
+    
+    With Application
+        .Calculation = CalcMode
+        .ScreenUpdating = True
+    End With
+    
+    With Application
+        CalcMode = .Calculation
+        .Calculation = xlCalculationManual
+        .ScreenUpdating = False
+        .DisplayAlerts = False
+    End With
+    
+    With ActiveSheet
+        .Select
+        ViewMode = ActiveWindow.View
+        ActiveWindow.View = xlNormalView
+        .DisplayPageBreaks = False
+
+        'Re-intialize all columns
+        Firstcol = 1
+        Lastcol = 7
+        
+        Firstrow = .UsedRange.Cells(1).Row
+        Lastrow = .UsedRange.Rows(.UsedRange.Rows.Count).Row
+
+        'Loop through the spreadsheet and add project name and accounting code to item
+        For Lrow = Lastrow To Firstrow Step -1
+            For Lcol = Lastcol To Firstcol Step -1
+                If Lcol = 1 Then
+                    Cells(Lrow, 1).Value = Status
+                End If
+                
+                If Lcol = 2 Then
+                    Cells(Lrow, 2).Value = Customer
+                End If
+                
+                If Lcol = 3 Then
+                    Cells(Lrow, 3).Value = CustomerPo
+                End If
+                
+                If Lcol = 4 Then
+                    Cells(Lrow, 4).Value = ProjectName
+                End If
+                
+                If Lcol = 5 Then
+                    Cells(Lrow, 5).Value = Description
+                End If
+                
+                If Lcol = 6 Then
+                    Cells(Lrow, 5).Value = ProjectManager
+                End If
+                
+                If Lcol = 7 Then
+                    If Cells(Lrow, "J").Value = "EST" Then
+                        Cells(Lrow, 6).Value = "TS180"
+                        Cells(Lrow, "J").Value = "1-EST"
+                        
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "DET" Then
+                        Cells(Lrow, 6).Value = "TS187"
+                        Cells(Lrow, "J").Value = "2-DET"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "PLA" Then
+                        Cells(Lrow, 6).Value = "TS190"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "SLC" Then
+                        Cells(Lrow, 6).Value = "TS300"
+                        Cells(Lrow, "J").Value = "3-SLC"
+                    End If
+                    
+                    
+                    If Cells(Lrow, "J").Value = "SBT" Then
+                        Cells(Lrow, 6).Value = "TS300"
+                        Cells(Lrow, "J").Value = "4-SBT"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "SBR" Then
+                        Cells(Lrow, 6).Value = "TS300"
+                        Cells(Lrow, "J").Value = "5-SBR"
+                    End If
+                    
+                       If Cells(Lrow, "J").Value = "STF" Then
+                        Cells(Lrow, 6).Value = "TS300"
+                        Cells(Lrow, "J").Value = "6-STF"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "SHW" Then
+                        Cells(Lrow, 6).Value = "TS300"
+                        Cells(Lrow, "J").Value = "7-SHW"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "SBP" Then
+                        Cells(Lrow, 6).Value = "TS300"
+                        Cells(Lrow, "J").Value = "8-SBP"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "QCT" Then
+                        Cells(Lrow, 6).Value = "TS400"
+                        Cells(Lrow, "J").Value = "9-QCT"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "SHP" Then
+                        Cells(Lrow, 6).Value = "TS300"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "SHF" Then
+                        Cells(Lrow, 6).Value = "TS300"
+                    End If
+                    
+                    
+                    If Cells(Lrow, "J").Value = "SMS" Then
+                        Cells(Lrow, 6).Value = "TS310"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "TRA" Then
+                        Cells(Lrow, 6).Value = "TS200"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "TRD" Then
+                        Cells(Lrow, 6).Value = "TS200"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "SHP" Then
+                        Cells(Lrow, 2).Value = "TS300"
+                    End If
+                    
+                    
+                    If Cells(Lrow, "J").Value = "BWJ" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "PFA" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "PFF" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "PFG" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "PFJ" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "PWJ" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+        
+                    If Cells(Lrow, "J").Value = "OCJ" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "SUP" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "BTJ" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "BMA" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "BMF" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    If Cells(Lrow, "J").Value = "BMG" Then
+                        Cells(Lrow, 6).Value = "TS500"
+                    End If
+                    
+                    
+                   If Cells(Lrow, "J").Value = "LAJ" Then
+                        Cells(Lrow, 6).Value = "TS570"
+                    End If
+                    
+                
+                    
+                End If
+                
+                
+            Next Lcol
+        Next Lrow
+    
+        'Re-intialize or sheets # rows and # columns
+        Firstrow = .UsedRange.Cells(1).Row
+        Lastrow = .UsedRange.Rows(.UsedRange.Rows.Count).Row
+        
+        Firstcol = .UsedRange.Cells(1).Column
+        Lastcol = .UsedRange.Columns(.UsedRange.Columns.Count).Column
+        
+        'Trim the data of white spaces
+        For Lrow = Lastrow To Firstrow Step -1
+            For Lcol = Lastcol To Firstcol Step -1
+                With .Cells(Lrow, Lcol)
+                    .Value = Trim(.Value)
+                End With
+            Next Lcol
+        Next Lrow
+        
+        'Delete the "False" column
+        .Columns("M").EntireColumn.Delete
+        
+        'Autosize the columns to fit
+        .Columns.AutoFit
+        
+    
+    End With
+    
+    With ActiveWindow
+        .View = ViewMode
+        .FreezePanes = False
+        .SplitColumn = 0
+        .SplitRow = 0
+    End With
+    
+    With Application
+        .Calculation = CalcMode
+        .ScreenUpdating = True
+    End With
+
+End With
+             
+
+End Sub
+
+Sub OpenFile()
+    Dim filename, Pathname As String
+    Dim Wb As Workbook
+    Dim ws As Worksheet
+    Dim MainSheet As Worksheet
+    Dim c As Range
+    Dim Rng As Range
+    
+    Application.ScreenUpdating = False
+
+    
+    Pathname = ActiveWorkbook.Path & "\Files\"
+    filename = Dir(Pathname & "*.xls")
+    Set MainSheet = ActiveSheet
+    
+    
+    Do While filename <> ""
+        Set Wb = Workbooks.Open(Pathname & filename)
+        Set ws = Wb.Sheets(1)
+        
+        With ws
+            Set Rng = .UsedRange
+            With MainSheet
+                Set c = .Cells(.Rows.Count, 1).End(xlUp).Offset(1)  'The first empty row
+                If c.Row = 2 Then
+                        Set c = c.Offset(-1)    'c moves to the first row
+                End If
+                    
+                c.Resize(Rng.Rows.Count, Rng.Columns.Count).Value = Rng.Value 'Writes the Rng values to c
+            End With
+        End With
+        Wb.Close
+        filename = Dir()
+    Loop
+    
+Application.ScreenUpdating = True
+End Sub

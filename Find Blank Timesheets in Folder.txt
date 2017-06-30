@@ -1,0 +1,121 @@
+Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+
+Sub FindBlankFiles()
+    Dim filename As String
+    Dim Pathname As String
+    Dim Wb1 As Workbook
+
+    Application.DisplayAlerts = False
+    
+    Pathname = ActiveWorkbook.Path & "\Test\"
+    filename = Dir(Pathname & "*.xls")
+    Do While filename <> ""
+        Set Wb1 = Workbooks.Open(Pathname & filename)
+        NoManHours Wb1, filename, Pathname
+        filename = Dir()
+    Loop
+    
+End Sub
+
+Sub NoManHours(x As Workbook, y As String, z As String)
+With x
+    Dim Firstrow As Long
+    Dim Lastrow As Long
+    Dim Lrow As Long
+    Dim Lcol As Long
+    Dim CalcMode As Long
+    Dim ViewMode As Long
+    Dim Count As Integer
+    
+    Dim FindFalse As Range
+    
+    Dim Column As Boolean
+    
+    Dim ProjectName1 As String
+    Dim Delete_file As String
+
+    With Application
+        CalcMode = .Calculation
+        .Calculation = xlCalculationManual
+        .ScreenUpdating = False
+        .DisplayAlerts = False
+    End With
+    
+    'We use the ActiveSheet but you can replace this with
+    'Sheets("MySheet")if you want
+    With ActiveSheet
+
+        'We select the sheet so we can change the window view
+        .Select
+
+        'If you are in Page Break Preview Or Page Layout view go
+        'back to normal view, we do this for speed
+        ViewMode = ActiveWindow.View
+        ActiveWindow.View = xlNormalView
+
+        'Turn off Page Breaks, we do this for speed
+        .DisplayPageBreaks = False
+
+        'Set the first and last row to loop through
+        Firstrow = .UsedRange.Cells(1).Row
+        Lastrow = .UsedRange.Rows(.UsedRange.Rows.Count).Row
+        
+        'Set the first and last column to loop through
+        Firstcol = .UsedRange.Cells(1).Column
+        Lastcol = .UsedRange.Columns(.UsedRange.Columns.Count).Column
+
+        'Loop through the spreadsheet and unmerge cells
+        For Lrow = Lastrow To Firstrow Step -1
+            For Lcol = Lastcol To Firstcol Step -1
+                With .Cells(Lrow, Lcol)
+                    If .MergeCells Then
+                        .MergeArea.UnMerge
+                    End If
+                End With
+            Next Lcol
+        Next Lrow
+
+        'Find ProjectName
+        ProjectName1 = .Cells(3, "A").Value
+        ProjectNameLength1 = Len(ProjectName1)
+        ProjectName1 = Mid(ProjectName1, 10, ProjectNameLength1)
+        
+        'Find the "False" Column
+        Firstrow = .UsedRange.Cells(1).Row
+        Lastrow = .UsedRange.Rows(.UsedRange.Rows.Count).Row
+        
+        Firstcol = .UsedRange.Cells(1).Column
+        Lastcol = .UsedRange.Columns(.UsedRange.Columns.Count).Column
+        
+        Count = 0
+        'We loop from Lastrow to Firstrow (bottom to top)
+        For Lrow = Lastrow To Firstrow Step -1
+            For Lcol = Lastcol To Firstcol Step -1
+            'We check the values in the AB column in this example
+                With .Cells(Lrow, Lcol)
+                    If .Value = "False" Then
+                        Count = Count + 1
+                        If Count = 1 Then
+                            Exit For
+                        End If
+                    End If
+                End With
+            Next Lcol
+        Next Lrow
+    
+        If Count = 0 Then
+            Debug.Print y
+            Delete_file = z & y
+            x.Close
+            Kill (Delete_file)
+            Exit Sub
+        End If
+    
+    x.Close
+    
+    End With
+End With
+End Sub
+        
+        
+        

@@ -1,0 +1,81 @@
+
+Sub GetProjectNames()
+    'variables for navigating
+    Dim intNumberAcct, i As Long
+    Dim objProject, IE, objElement As Object
+    Dim MyArray() As String
+    Dim ArraySize As Long
+    
+    Dim Pathname, ProjectName, Old_Path, Old_File, New_Path, New_File As String
+    
+    
+    Pathname = ActiveWorkbook.Path & "\Test\"
+    
+    Application.ScreenUpdating = False
+    
+    ' Create InternetExplorer Object
+    Set IE = CreateObject("InternetExplorer.Application")
+    
+    ' You can uncoment Next line To see form results
+    IE.Visible = False
+    
+    ' Send the form data To URL As POST binary request
+    IE.Navigate "https://central.cmw.cc:4443/Reports/Pages/Report.aspx?ItemPath=%2fMy+Reports%2fProject_Cost"
+    
+    ' Wait while IE loading...
+    Do While IE.Busy
+        Application.Wait DateAdd("s", 1, Now)
+    Loop
+    
+    ArraySize = 78939
+    ReDim MyArray(ArraySize)
+    
+    intNumberAcct = 7933
+    Do While i <= intNumberAcct
+        
+        Set objProject = IE.Document.getElementById("ctl144_ctl00_ctl05_ddValue")
+        
+        'selects a project from the drop down menu
+        objProject.selectedindex = i
+        ProjectName = objProject.Item(i).innertext
+        ProjectName = Trim(ProjectName)
+        
+        MyArray(i) = ProjectName
+        Debug.Print MyArray(i)
+        
+        'If ProjectName = "130229-01TF" Then
+            'Debug.Print objProject.selectedindex
+        'End If
+        'count i to start next drop down item
+        i = i + 1
+    Loop
+    
+    With Application
+        CalcMode = .Calculation
+        .Calculation = xlCalculationManual
+        .ScreenUpdating = False
+        .DisplayAlerts = False
+    End With
+    
+    
+    With ActiveSheet
+
+    .Select
+
+    ViewMode = ActiveWindow.View
+    ActiveWindow.View = xlNormalView
+
+    .DisplayPageBreaks = False
+    
+    
+    For i = 0 To ArraySize
+        .Cells((i + 1), "A").Value = MyArray(i)
+        Debug.Print MyArray(i)
+    Next i
+End With
+    
+With Application
+    .ScreenUpdating = True
+End With
+    
+End Sub

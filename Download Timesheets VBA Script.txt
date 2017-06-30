@@ -1,0 +1,158 @@
+Public Declare Function GetForegroundWindow Lib "user32" _
+     () As Long
+     
+ Public Declare Function GetWindowText Lib "user32" _
+     Alias "GetWindowTextA" (ByVal hwnd As Long, _
+     ByVal lpString As String, ByVal cch As Long) As Long
+     
+Private Declare Function FindWindowEx Lib "user32" _
+                                   Alias "FindWindowExA" (ByVal hWnd1 As Long, ByVal hWnd2 As Long, _
+                                   ByVal lpsz1 As String, ByVal lpsz2 As String) As Long
+                                   
+Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
+
+Public Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
+
+Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+
+Public Declare Function SetForegroundWindow Lib "user32" (ByVal hwnd As Long) As Long
+
+Public Const BM_CLICK = &HF5
+
+Sub DownloadProjectJobCost()
+    'variables for navigating
+    Dim intNumberAcct, i, IePopupBarHandle As Long
+    Dim objProject, objSubmitButton, objFormatButtton, objExportButton, IE, objElement As Object
+    
+    Dim Wb As Workbook
+    
+    Dim Pathname, ProjectName, Old_Path, Old_File, New_Path, New_File As String
+    
+    Dim Timeout As Date
+    Dim AutoMode As Boolean, FileDownloadClassicPopup As Boolean, DownloadComplete As Boolean
+    
+    Pathname = ActiveWorkbook.Path & "\Test\"
+    
+    Application.ScreenUpdating = False
+    
+    ' Create InternetExplorer Object
+    Set IE = CreateObject("InternetExplorer.Application")
+    IeHandle = IE.hwnd
+    
+    ' You can uncoment Next line To see form results
+    IE.Visible = False
+    
+    ' Send the form data To URL As POST binary request
+    IE.Navigate "https://central.cmw.cc:4443/Reports/Pages/Report.aspx?ItemPath=%2fMy+Reports%2fProject_Cost"
+    
+    ' Wait while IE loading...
+    Do While IE.Busy
+        Application.Wait DateAdd("s", 1, Now)
+    Loop
+    
+    i = 908
+    
+    intNumberAcct = 1505
+    Do While i < intNumberAcct
+        
+        Set objProject = IE.Document.getElementById("ctl144_ctl00_ctl05_ddValue")
+        Set objSubmitButton = IE.Document.getElementById("ctl144_ctl00_ctl00")
+        
+        'selects a project from the drop down menu
+        objProject.selectedindex = i + 1
+        ProjectName = objProject.Item(i + 1).innertext
+        ProjectName = Trim(ProjectName)
+        
+        objSubmitButton.Click
+        
+        Do While IE.Busy
+        Application.Wait DateAdd("s", 6, Now)
+        Loop
+        
+        Set objFormatButtton = IE.Document.getElementById("ctl144_ctl01_ctl05_ctl00")
+        Set objExportButton = IE.Document.getElementById("ctl144_ctl01_ctl05_ctl01")
+        
+        objFormatButtton.selectedindex = 5
+        
+        Do While IE.Busy
+        Application.Wait DateAdd("s", 6, Now)
+        Loop
+        
+        objExportButton.Click
+        
+        
+        
+        DownloadComplete = False
+        FileDownloadClassicPopup = False
+        FileDownloadHandle = 0
+        IePopupBarHandle = 0
+
+       Sleep 1000
+        
+        Timeout = Now + TimeValue("00:00:20")
+        Do While DownloadComplete = False
+            IePopupBarHandle = FindWindowEx(IeHandle, 0, "Frame Notification Bar", vbNullString)
+            
+            
+            IePopupBarHandle = FindWindowEx(IePopupBarHandle, 0, "DirectUIHWND", vbNullString)
+            
+            
+            If IePopupBarHandle <> 0 And IE.readystate = 4 Then
+                DownloadComplete = True
+                
+            Else
+                FileDownloadHandle = FindWindow("#32770", "File Download")
+                
+            
+            If FileDownloadHandle <> 0 Then DownloadComplete = True: FileDownloadClassicPopup = True
+            
+            End If
+            
+            DoEvents
+            
+            If Now > Timeout Then
+                MsgBox "The file could not be located/downloaded, please try again!"
+            End If
+            
+            Sleep 250
+        Loop
+
+            'Take control of IE security banner - Newer versions of IE with popup bar
+        SetForegroundWindow (IeHandle)
+            
+        Sleep 3500
+        SendKeys "%s", Wait:=True
+        DoEvents
+       
+        
+        'the file should now be opening
+        Application.Wait Now + TimeValue("00:00:02")
+        
+        Application.DisplayAlerts = False
+        
+        
+        Old_Path = "C:\Users\amelton\Downloads\"
+        Old_File_Name = "Project_Cost.xls"
+        
+        New_Path = "C:\Users\amelton\Downloads\Reports\12_1_14\Test\"
+        New_File_Name = ProjectName
+        
+        Set Wb = Workbooks.Open(Old_Path & Old_File_Name)
+        
+        Wb.SaveAs (New_Path & New_File_Name)
+        
+        Sleep 1000
+        
+        Wb.Close
+        
+        Sleep 1000
+        
+        Kill "C:\Users\amelton\Downloads\Project_Cost.xls"
+    
+        Sleep 1000
+        'count i to start next drop down item
+        i = i + 1
+    Loop
+End Sub
+
+
