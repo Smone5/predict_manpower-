@@ -1,6 +1,6 @@
 # Predict Fabrication Shop Manpower
 
-A a few VBA scripts I created in a scheduling contract position to predict the manpower for welding fabrication shop in Florida. 
+A a few VBA scripts I created in a scheduling contract position to predict the manpower for welding fabrication shop in Florida. The data used for this analysis is not shared to protect the privacy of the company. 
 
 ## Problem
 The initial problem was the welding fabrication shop I working at was using a lot of overtime to finish projects on the time. The company was wondering why so much overtime was being used to complete jobs.  
@@ -20,7 +20,7 @@ One of main problems for answering this question with data was there was no clea
 4. With data extracted, cleaned and combined I could finally begin my analysis
 
 ## Analysis
-After exploring the data with a sample size 609 working days, the analysis showed the fabrication shop had two problems.
+After exploring the data with a sample size 609 working days from 01/02/2013 to 12/31/2014 , the analysis showed the fabrication shop had two problems.
 1. They were getting bottlenecked in the welding phase of the shop. 
 2. Because they were behind on one project, they had to use overtime to catch on the next one. This was a snowball effect on all projects.
 
