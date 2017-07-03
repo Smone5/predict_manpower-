@@ -27,6 +27,8 @@ After exploring the data, the analysis showed the fabrication shop had two probl
 ## Solutions
 Many potential solutions were discussed like using technology to improve the efficiency of welding. Another possible solution was to add more space and welders to alleviate the bottleneck. One perspective I took was trying to predict how much manpower would be needed in order to meet demand based off historical performance. This ended up being a rather simple machine learning model. Using linear regression, I was able to train a linear regression model on historical data to predict with roughly 90% accuracy how much manpower overall would be needed in the fabrication shop based on the number of concurrent projects. 
 
+![chart](https://github.com/Smone5/predict_manpower-/blob/master/chart.png)
+
 ## Overall Experience
 Unfortunately, I was not able to expand on my linear regression model as a new job opportunity came up. However, this was great experience for me in learning how to extract, clean and combine data for analysis. I got explore the data in a lot of different ways like heat maps and used statistical methods to evaluate the correlation of certain variables. The most important lesson I learned was to focus on the business problem. It is easy use the latest machine learning technique in order to impress counterparts. The most important thing is to stay on track with original business problem and solve it in the most efficient and accurate way.
 
