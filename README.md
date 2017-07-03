@@ -10,12 +10,12 @@ One of main problems for answering this question with data was there was no clea
 ## Steps
 1. Teach myself VBA. Up to this point most of my programming background was in Python. However, the IT department did not grant me the license to use Python. So, I was forced to adapt and learn VBA for Microsoft Excel instead.
 2. Create a VBA scripts to travel the company’s server and sequentially download thousands of timesheets PDFs individually.
-    a. [Get List of Projects on Server](https://github.com/Smone5/predict_manpower-/blob/master/Get%20List%20of%20Projects%20On%20Server.txt)
-    b. [Download Timesheets](https://github.com/Smone5/predict_manpower-/blob/master/Download%20Timesheets%20VBA%20Script.txt)
-    c. [Find and Delete Any Blank Timesheets] (https://github.com/Smone5/predict_manpower-/blob/master/Find%20Blank%20Timesheets%20in%20Folder.txt)
+    * a. [Get List of Projects on Server](https://github.com/Smone5/predict_manpower-/blob/master/Get%20List%20of%20Projects%20On%20Server.txt)
+    * b. [Download Timesheets](https://github.com/Smone5/predict_manpower-/blob/master/Download%20Timesheets%20VBA%20Script.txt)
+    * c. [Find and Delete Any Blank Timesheets] (https://github.com/Smone5/predict_manpower-/blob/master/Find%20Blank%20Timesheets%20in%20Folder.txt)
     
 3. Once the timesheets were downloaded, I needed to sequentially go through them to extract the information I needed for my analysis and combine it into one file
-    a. [Combine Timesheets] (https://github.com/Smone5/predict_manpower-/blob/master/OpenFile%20VBA%20Script.txt)
+    * a. [Combine Timesheets] (https://github.com/Smone5/predict_manpower-/blob/master/OpenFile%20VBA%20Script.txt)
     
 4. With data extracted, cleaned and combined I could finally begin my analysis
 
