@@ -3,7 +3,7 @@
 A a few VBA scripts I created in a scheduling contract position to predict the manpower for welding fabrication shop in Florida. 
 
 ## Problem
-The initial problem was the fabrication shop I working at was using a lot of overtime to finish projects on the time. The company was wondering why so much overtime was being used to complete jobs? 
+The initial problem was the welding fabrication shop I working at was using a lot of overtime to finish projects on the time. The company was wondering why so much overtime was being used to complete jobs.  
 
 One of main problems for answering this question with data was there was no clean data to analyze. The company had been keeping timesheets for projects at least five years back in PDFs, but did not engineer the data to analyzed in software like Excel. In order to solve the problem, I needed to do the following steps.
 
