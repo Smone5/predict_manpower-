@@ -20,15 +20,18 @@ One of main problems for answering this question with data was there was no clea
 4. With data extracted, cleaned and combined I could finally begin my analysis
 
 ## Analysis
-After exploring the data, the analysis showed the fabrication shop had two problems.
+After exploring the data with a sample size 609 working days, the analysis showed the fabrication shop had two problems.
 1. They were getting bottlenecked in the welding phase of the shop. 
 2. Because they were behind on one project, they had to use overtime to catch on the next one. This was a snowball effect on all projects.
 
 ## Solutions
-Many potential solutions were discussed like using technology to improve the efficiency of welding. Another possible solution was to add more space and welders to alleviate the bottleneck. One perspective I took was trying to predict how much manpower would be needed in order to meet demand based off historical performance. This ended up being a rather simple machine learning model. Using linear regression, I was able to train a linear regression model on historical data to predict with roughly 90% accuracy how much manpower overall would be needed in the fabrication shop based on the number of concurrent projects. 
+Many potential solutions were discussed like using technology to improve the efficiency of welding. Another possible solution was to add more space and welders to alleviate the bottleneck. One perspective I took was trying to predict how much manpower would be needed in order to meet demand based off historical performance. This ended up being a rather simple machine learning model. Using linear regression, I was able to train a linear regression model on historical data to predict with roughly 90% accuracy how much manpower overall would be needed in the fabrication shop based on the number of concurrent projects.  
 
 ![chart](https://github.com/Smone5/predict_manpower-/blob/master/chart.png)
 
+## Possible Errors
+Looking back, I realize my linegar regression my prediction was only done on training data and not sample data. It is likely not as accurate as I predicted. Also most of the data came from projects working at one company with a lot of routine work. During my tenure the company was trying diversify their project portfolio. It is likely in the future that linear regression model will not be as accurate predicting the new type of work. I also did not generate a good hypothesis to test against at the very beginning of analysis. As my analysis went on I changed the hypothesis to match the data. 
+
 ## Overall Experience
-Unfortunately, I was not able to expand on my linear regression model as a new job opportunity came up. However, this was great experience for me in learning how to extract, clean and combine data for analysis. I got explore the data in a lot of different ways like heat maps and used statistical methods to evaluate the correlation of certain variables. The most important lesson I learned was to focus on the business problem. It is easy use the latest machine learning technique in order to impress counterparts. The most important thing is to stay on track with original business problem and solve it in the most efficient and accurate way.
+Unfortunately, I was not able to expand on my linear regression model as a new job opportunity came up. However, this was great experience for me to learn how to extract, clean and combine data for analysis. I got explore the data in a lot of different ways like heat maps and used statistical methods to evaluate the correlation of certain variables. The most important lesson I learned was to focus on the business problem and frame it in a testable hypothesis.
 
