@@ -1,6 +1,6 @@
 # Predict Fabrication Shop Manpower
 
-VBA scripts I created in a scheduling contract position to predict the manpower for welding fabrication shop in Florida. The data used for this analysis is not shared to protect the privacy of the company. 
+VBA scripts created in a scheduling contract position to predict the manpower for welding fabrication shop in Florida. The data used for this analysis is not shared to protect the privacy of the company. 
 
 ## Problem
 The initial problem was the welding fabrication shop I working at was using a lot of overtime to finish projects on the time. The company was wondering why so much overtime was being used to complete jobs.  
